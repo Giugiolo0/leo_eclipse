@@ -1,0 +1,14 @@
+# output of a run
+results/
+
+# python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# os
+.DS_Store
+Thumbs.db
+
