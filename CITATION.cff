@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the software and the paper."
+title: "leo_eclipse: eclipse duration and beta angle for circular low Earth orbits"
+abstract: >-
+  A single self-contained Python script that computes the beta angle and the
+  eclipse duration of a circular low Earth orbit, in closed form and by direct
+  geometric sampling of the Earth shadow, including the secular J2 regression
+  of the node. Validated against NASA GMAT R2025a.
+type: software
+authors:
+  - family-names: Fontanella
+    given-names: Giulio
+    email: giulio.fontanella@gssi.it
+    affiliation: "Gran Sasso Science Institute (GSSI) and INFN Laboratori Nazionali del Gran Sasso"
+license: MIT
+repository-code: "https://github.com/Giugiolo0/leo_eclipse"
+keywords:
+  - astrodynamics
+  - eclipse
+  - beta angle
+  - low Earth orbit
+  - mission analysis
