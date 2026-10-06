@@ -96,7 +96,7 @@ import numpy as np
 __all__ = ["Constants", "OrbitConfig", "EclipseModel", "sun_unit_vector_eci",
            "julian_date", "julian_centuries", "make_figures",
            "compare_missions", "self_test", "MISSIONS"]
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 
 # ============================================================================
@@ -306,11 +306,22 @@ class EclipseModel:
         # --- Shadow geometry ---
         self.rho = math.asin(c.R_EARTH / self.a)               # Earth angular radius [rad]
         self.beta_crit_deg = math.degrees(self.rho)
+        # Umbra and penumbra cones (reported only; the shadow test is the
+        # cylinder of assumption A5). Half-apertures at 1 AU:
+        #   sin(alpha_u) = (R_sun - R_E)/AU,  sin(alpha_p) = (R_sun + R_E)/AU.
+        # The cone radius depends on the distance x travelled BEHIND the Earth
+        # along the anti-Sun axis, not on the altitude:
+        #   r_u(x) = R_E - x tan(alpha_u),  r_p(x) = R_E + x tan(alpha_p),
+        # and a circular orbit of radius a meets the shadow boundary at
+        # x = sqrt(a^2 - R_E^2).
         self.sun_angular_radius = math.atan(c.R_SUN / c.AU)
-        self.umbra_length = c.R_EARTH / math.tan(self.sun_angular_radius)
-        self.penumbra_length = 1.02 * self.umbra_length
-        self.umbra_radius = c.R_EARTH * (1.0 - config.altitude_km / self.umbra_length)
-        self.penumbra_radius = c.R_EARTH * (1.0 + config.altitude_km / self.penumbra_length)
+        alpha_u = math.asin((c.R_SUN - c.R_EARTH) / c.AU)
+        alpha_p = math.asin((c.R_SUN + c.R_EARTH) / c.AU)
+        self.umbra_length = c.R_EARTH / math.sin(alpha_u)     # Earth centre -> umbra apex
+        self.penumbra_length = c.R_EARTH / math.sin(alpha_p)  # penumbra apex -> Earth centre (Sun side)
+        self.shadow_entry_x = math.sqrt(self.a ** 2 - c.R_EARTH ** 2)
+        self.umbra_radius = c.R_EARTH - self.shadow_entry_x * math.tan(alpha_u)
+        self.penumbra_radius = c.R_EARTH + self.shadow_entry_x * math.tan(alpha_p)
 
     # ------------------------------------------------------------------ time
     def _elapsed(self, date: datetime) -> float:
@@ -517,7 +528,7 @@ class EclipseModel:
             f" Nodal regression        {math.degrees(self.raan_dot) * 86400.0:10.4f} deg/day",
             f" Earth angular radius    {self.beta_crit_deg:10.3f} deg  (= beta_crit)",
             f" Umbra cone length       {self.umbra_length:10.1f} km",
-            f" Umbra radius at h       {self.umbra_radius:10.1f} km",
+            f" Umbra radius at entry   {self.umbra_radius:10.1f} km",
             f" Penumbra factor k       {c.penumbra_factor:10.3f}",
             f" Epoch                   {c.epoch:%Y-%m-%d %H:%M} UTC",
             f" End                     {c.end:%Y-%m-%d %H:%M} UTC"
