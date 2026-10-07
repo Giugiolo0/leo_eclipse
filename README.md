@@ -7,13 +7,19 @@ The purpose of the code is to show that a dedicated mission-analysis package is
 not needed to size the eclipse budget of a LEO mission: the problem is
 elementary geometry plus a low-precision solar ephemeris, and the result matches
 NASA GMAT R2025a (SPICE conical `EclipseLocator`, DE421 ephemerides, J2 gravity
-field, RK8(9) propagator) over a 61-day reference run at h = 411 km, i = 37 deg:
+field, RK8(9) propagator, started from the same mean elements) over a 61-day
+reference run at h = 411 km, i = 37 deg:
 
 ```
-beta angle        RMS 0.38 deg over an 83 deg sweep   (5780 samples)
-eclipse duration  +1.57 % with k = 1.02 (default)     (948 orbits)
-                  -0.42 % with k = 1.00
+beta angle        RMS 0.16 deg over an 83 deg sweep   (57,751 GMAT states)
+eclipse duration  +1.65 % with k = 1.02 (default)     (948 orbits)
+                  -0.34 % with k = 1.00
 ```
+
+The elements given to the script are mean elements: a numerical propagator used
+for comparison should be started from the same mean elements (in GMAT, the
+Brouwer-Lyddane mean state), not from the same numbers read as osculating
+elements.
 
 ---
 
@@ -154,7 +160,7 @@ comparable with published analyses and because its bias is conservative
 (slightly longer eclipses) for cold-case thermal and battery sizing.
 
 The validation against GMAT quantifies that choice: `k = 1.02` biases the
-duration by **+1.57 %**, `k = 1.00` by **-0.42 %** with a threefold smaller RMS
+duration by **+1.65 %**, `k = 1.00` by **-0.34 %** with a fourfold smaller RMS
 residual. For sub-percent accuracy set `PENUMBRA_FACTOR = 1.0`.
 
 `k` scales only the closed-form duration. The geometric shadow test
@@ -184,7 +190,7 @@ They run at each start (`SELF_TEST = True`); `python leo_eclipse.py
 Circular orbit; secular J2 only; low-precision solar ephemeris (~0.01 deg in
 longitude); spherical Earth; cylindrical umbra with a scalar penumbra factor;
 uniform UTC. Each is documented, with its quantified impact, in the module
-docstring and in Table 1 of the accompanying paper.
+docstring and in Appendix A of the accompanying paper.
 
 ## License
 
