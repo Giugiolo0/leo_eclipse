@@ -12,9 +12,10 @@ A single, self-contained Python script that computes, for any circular LEO:
 The point of the script is that no external mission-analysis software is
 needed: the whole computation is elementary geometry plus a low-precision
 solar ephemeris, and it reproduces NASA GMAT R2025a (SPICE conical
-EclipseLocator, DE421 ephemerides, J2 gravity field, RK8(9) propagator) to
-0.4 deg RMS on the beta angle and to better than 2 % on the eclipse duration
-over a 61-day mission at h = 411 km, i = 37 deg.
+EclipseLocator, DE421 ephemerides, J2 gravity field, RK8(9) propagator, started
+from the same mean elements) to 0.16 deg RMS on the beta angle and to better
+than 2 % on the eclipse duration over a 61-day mission at h = 411 km,
+i = 37 deg.
 
 --------------------------------------------------------------------------------
 HOW TO USE IT
@@ -66,7 +67,11 @@ A2  Secular J2 only. The orbital plane precesses at the mean rate
     terms, drag, SRP and third-body perturbations are ignored.
 A3  Low-precision solar ephemeris (mean longitude + equation of centre, two
     terms). Accuracy about 0.01 deg in ecliptic longitude, i.e. < 0.02 deg on
-    the beta angle -- negligible against the 0.4 deg RMS observed against GMAT.
+    the beta angle. The longitude is referred to the mean equinox of date
+    while the orbit is in J2000 (0.39 deg apart in 2028), and the J2
+    regression is taken about the J2000 axis rather than the pole of date
+    (0.16 deg apart): with the first-order rate of A2 these set the 0.16 deg
+    RMS residual on the beta angle observed against GMAT.
 A4  Spherical Earth of radius R_E = 6378.137 km; oblateness is not included in
     the shadow cross-section.
 A5  Cylindrical (umbra-only) shadow for the geometric in/out test; the
@@ -74,7 +79,8 @@ A5  Cylindrical (umbra-only) shadow for the geometric in/out test; the
     PENUMBRA_FACTOR (1.02 by default) to account for the penumbra transition
     and for atmospheric extinction at the shadow boundary.
 A6  Times are UTC and treated as uniform (no UT1/TT distinction, no leap
-    seconds). The resulting epoch error is < 1.5 min over the 21st century.
+    seconds). The ephemeris argument should be TT; TT - UTC = 69.2 s in 2028,
+    i.e. 0.0008 deg of solar longitude.
 
 Author: G. Fontanella (GSSI / INFN-LNGS)
 License: MIT
